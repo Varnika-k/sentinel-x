@@ -1,0 +1,167 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState, useEffect } from 'react';
+import { useSimulation } from './hooks/useSimulation';
+import { useTelemetryStore } from './telemetry/store';
+import { BootSequence } from './components/layout/BootSequence';
+import { ThreatBanner } from './components/features/ThreatBanner';
+import { MetricsPanel } from './components/features/MetricsPanel';
+import { NetworkGraph } from './components/viz/NetworkGraph';
+import { ControlPanel } from './components/features/ControlPanel';
+import { EventPanel } from './components/features/EventPanel';
+import { SimulationView } from './components/layout/SimulationView';
+import { BattleManual } from './components/features/BattleManual';
+import { NodeDetails } from './components/features/NodeDetails';
+import { IncidentReport } from './components/features/IncidentReport';
+import { LandingPage } from './components/layout/LandingPage';
+import { EnterpriseCommandCenter } from './components/layout/EnterpriseCommandCenter';
+import { TutorialOverlay } from './components/features/TutorialOverlay';
+import { LoginTerminal } from './components/layout/LoginTerminal';
+import { TelemetryDiagnostics } from './components/features/TelemetryDiagnostics';
+import { AttackTimeline } from './components/layout/AttackTimeline';
+import { TelemetryErrorBoundary } from './components/layout/TelemetryErrorBoundary';
+import { NetworkNode } from './types/network';
+import { motion, AnimatePresence } from 'motion/react';import { Shield, ShieldAlert, Cpu, Network, FileText, ArrowLeft, LogOut } from 'lucide-react';
+
+export default function App() {
+  const [view, setView] = useState<'booting' | 'landing' | 'simulation' | 'command-center'>('landing');
+  const [showManual, setShowManual] = useState(false);
+  const [showDiagnostics, setShowDiagnostics] = useState(true);
+  const [operatorRole, setOperatorRole] = useState<string>('Administrator');
+  const [activeTenant, setActiveTenant] = useState<string>('CORE_INTEL_US_EAST');
+  
+  // The Telemetry Store (Listens to Bus - Source of Truth for UI)
+  const { state: telemetryState, isOnline } = useTelemetryStore();
+  
+  // The Simulation Controller (Emits to Bus)
+  const { 
+    state: simState, 
+    launchAttack, 
+    launchScenario, 
+    activateDefense, 
+    isolateNode, 
+    orchestrateDefense,
+    resetSimulation,
+    setSimulationSpeed,
+    toggleDefenseModule,
+    updateNodeVulnerability,
+    updateZoneVulnerability,
+    updateIncidentStatus,
+    addIncidentNote,
+    applyDefenseRecommendation,
+    dismissDefenseRecommendation,
+    setSpreadVelocity,
+    setDefenseStrategyMode,
+    toggleSimulation
+  } = useSimulation(telemetryState);
+
+  const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+
+  // Press ESC to clear selection and close details panel
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedNode(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  // We use the telemetry state for rendering to ensure architecture is event-driven
+  const activeState = view === 'simulation' ? telemetryState : simState;
+
+  if (view === 'booting') {
+    return (
+      <LoginTerminal 
+        onComplete={(role, tenant) => {
+          setOperatorRole(role);
+          setActiveTenant(tenant);
+          setView('landing');
+        }} 
+      />
+    );
+  }
+
+  return (
+    <TelemetryErrorBoundary>
+      <div className="bg-void text-text-primary selection:bg-accent-cyan/30 font-body uppercase min-h-screen">
+        {view === 'landing' ? (
+          <LandingPage 
+            onEnterSimulation={() => setView('simulation')}
+            onEnterCommandCenter={() => setView('command-center')}
+            onOpenManual={() => setShowManual(true)}
+            operatorRole={operatorRole}
+            activeTenant={activeTenant}
+          />
+        ) : view === 'command-center' ? (
+          <EnterpriseCommandCenter 
+            onBackToLanding={() => setView('landing')}
+            operatorRole={operatorRole}
+            activeTenant={activeTenant}
+          />
+        ) : (
+          <SimulationView 
+            simulationState={activeState}
+            isOnline={isOnline}
+            operatorRole={operatorRole}
+            activeTenant={activeTenant}
+            onEscalateRole={setOperatorRole}
+            onEnterCommandCenter={() => setView('command-center')}
+            simulationActions={{
+              launchAttack,
+              launchScenario,
+              activateDefense,
+              isolateNode,
+              orchestrateDefense,
+              resetSimulation,
+              setSimulationSpeed,
+              toggleDefenseModule,
+              updateNodeVulnerability,
+              updateZoneVulnerability,
+              updateIncidentStatus,
+              addIncidentNote,
+              applyDefenseRecommendation,
+              dismissDefenseRecommendation,
+              setSpreadVelocity,
+              setDefenseStrategyMode,
+              toggleSimulation
+            }}
+            selectedNode={selectedNode}
+            onSelectNode={setSelectedNode}
+            showHeatmap={showHeatmap}
+            onToggleHeatmap={() => setShowHeatmap(!showHeatmap)}
+            showReport={showReport}
+            onSetShowReport={setShowReport}
+            onExit={() => setView('landing')}
+            onOpenManual={() => setShowManual(true)}
+          />
+        )}
+
+        <AnimatePresence>
+          {showManual && <BattleManual onClose={() => setShowManual(false)} />}
+        </AnimatePresence>
+
+        <IncidentReport 
+          events={activeState.events}
+          isOpen={showReport}
+          onClose={() => setShowReport(false)}
+        />
+
+        {showDiagnostics && <TelemetryDiagnostics />}
+
+        {/* Global Cinematic Accents */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,209,0.015)_0%,transparent_60%)]" />
+        </div>
+      </div>
+    </TelemetryErrorBoundary>
+  );
+}

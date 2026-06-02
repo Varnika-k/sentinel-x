@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinelx-prod-config
+  namespace: sentinelx
+  labels:
+    app.kubernetes.io/name: sentinelx
+    app.kubernetes.io/part-of: sentinelx-enterprise
+data:
+  DEPLOYMENT_PROFILE: "production"
+  NODE_ENV: "production"
+  PORT: "3000"
+  DB_POOL_MAX: "25"
+  GEMINI_MODEL: "gemini-2.5-flash"

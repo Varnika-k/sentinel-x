@@ -1,0 +1,11 @@
+{
+  "name": "SentinelX",
+  "description": "SentinelX Enterprise Intelligence Operating System - Advanced incident management, real-time threat correlation, and cognitive investigation workflows.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API",
+    "Real-time simulation",
+    "AI Threat Intelligence",
+    "Network Visualization"
+  ]
+}

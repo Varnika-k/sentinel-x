@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinelx-app
+  namespace: sentinelx
+  labels:
+    app: sentinelx
+    app.kubernetes.io/name: sentinelx
+    app.kubernetes.io/part-of: sentinelx-enterprise
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: sentinelx
+  template:
+    metadata:
+      labels:
+        app: sentinelx
+    spec:
+      containers:
+        - name: sentinelx-container
+          image: gcr.io/sentinelx-corp/sentinelx-base:v2.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http-port
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: sentinelx-prod-config
+          env:
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sentinelx-secret-credentials
+                  key: gemini-api-key
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sentinelx-secret-credentials
+                  key: redis-url
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sentinelx-secret-credentials
+                  key: database-url
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1500m"
+              memory: "2Gi"
+          
+          # Enterprise Health Probes
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http-port
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+            
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-port
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http-port
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 15

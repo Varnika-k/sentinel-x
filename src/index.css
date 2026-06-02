@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Share+Tech+Mono&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Typography System - Shifting from game-y to precision enterprise */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Inter", sans-serif;
+  --font-heading: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-accent: "Share Tech Mono", monospace;
+  
+  /* Aliases */
+  --font-ui: var(--font-sans);
+  --font-ai: var(--font-mono);
+
+  /* Color System - Palantir/Anduril inspired precision palette */
+  --color-void: #020408;
+  --color-surface: #0a0d14;
+  --color-panel: #11151f;
+  --color-elevated: #1a1f2e;
+  --color-faint: #232a3d;
+  --color-border: #1e2535;
+  --color-border-bright: #2d364d;
+  
+  /* Modern High-Precision Accents */
+  --color-accent-cyan: #00f2ff;
+  --color-accent-blue: #3b82f6;
+  --color-accent-indigo: #6366f1;
+  
+  /* Operational State Colors - Muted but clear */
+  --color-state-safe: #10b981;
+  --color-state-danger: #ef4444;
+  --color-state-warning: #f59e0b;
+  --color-state-iso: #3b82f6;
+  --color-state-patched: #a855f7;
+  --color-state-amber: #f59e0b;
+
+  /* Zone Colors */
+  --color-zone-perimeter: #3b82f6;
+  --color-zone-core: #00f2ff;
+  --color-zone-data: #ef4444;
+  --color-zone-app: #10b981;
+  --color-zone-endpoint: #f59e0b;
+  --color-zone-mgmt: #a855f7;
+
+  /* Data-Driven Text Colors */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+  
+  /* Utilities for precision glow */
+  --shadow-precision: 0 0 1px rgba(0, 242, 255, 0.4), 0 0 8px rgba(0, 242, 255, 0.1);
+  --shadow-danger: 0 0 1px rgba(239, 68, 68, 0.4), 0 0 8px rgba(239, 68, 68, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-void text-text-primary antialiased overflow-x-hidden font-sans;
+    cursor: default;
+    letter-spacing: -0.01em;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .cyber-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+  }
+
+  .text-glow-precision {
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+  }
+
+  .glass-panel {
+    @apply bg-panel/30 backdrop-blur-lg border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.7)] rounded-sm;
+  }
+
+  .precision-button {
+    @apply relative px-4 py-1.5 text-[11px] font-medium tracking-wider uppercase transition-all
+           border border-border-bright/50 hover:border-accent-cyan/50 hover:bg-accent-cyan/5;
+    clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 2px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border-bright/30 rounded-full hover:bg-accent-cyan/40;
+  }
+}
+
+@keyframes pulse-precision {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+.animate-pulse-precision {
+  animation: pulse-precision 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes cyber-flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes slide-reveal {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.skeleton-loading {
+  @apply relative overflow-hidden bg-faint rounded-sm;
+}
+
+.skeleton-loading::after {
+  content: "";
+  @apply absolute inset-0;
+  background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.05), transparent);
+  animation: slide-reveal 1.5s infinite;
+}
