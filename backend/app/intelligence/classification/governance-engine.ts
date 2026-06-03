@@ -6,7 +6,8 @@ import { logger } from '../../core/logger';
 
 // Baseline content mappings to run mock audit classifications without saving raw data
 const NODE_STATIC_CONTEXT_MAPS: Record<string, { filename: string; text: string }> = {
-  '1':    filename: 'ingress-nginx.conf',
+  '1':
+ {  filename: 'ingress-nginx.conf',
     text: '# Nginx reverse proxy configuration\n# Bearer Token signature header routing\nallow 0.0.0.0/0;'
   },
   '2': {
