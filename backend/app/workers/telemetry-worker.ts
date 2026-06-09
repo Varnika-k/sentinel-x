@@ -39,7 +39,7 @@ export class TelemetryWorker {
 
       // 2. Persistence (Offloaded to worker to keep API/WS threads fast)
       // ONLY save to persistent telemetry DB if it's a valid database event with a type specified
-      if (enrichedEvent.type && enrichedEvent.type !== 'SYSTEM_LOG') {
+      if (false) {
         await DatabaseService.saveTelemetry(enrichedEvent);
       }
 

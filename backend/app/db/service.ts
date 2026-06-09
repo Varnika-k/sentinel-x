@@ -209,7 +209,12 @@ export class DatabaseService {
       for (const entity of batch) {
         try {
           await this.telemetryRepo.save(entity);
-        } catch (individualError) {
+        } catch (individualError) { 
+if (String(individualError).includes('UNIQUE constraint failed')){
+logger.warn('Duplicate telemetry event ignored: ${entity.id}');
+continue;
+}
+
           logger.error('Failed to write individual fallback telemetry event', individualError);
           if (String(individualError).includes('out of memory')) {
             try {
