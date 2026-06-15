@@ -27,7 +27,7 @@ import { NetworkNode } from './types/network';
 import { motion, AnimatePresence } from 'motion/react';import { Shield, ShieldAlert, Cpu, Network, FileText, ArrowLeft, LogOut } from 'lucide-react';
 
 export default function App() {
-  const [view, setView] = useState<'booting' | 'landing' | 'simulation' | 'command-center'>('landing');
+  const [view, setView] = useState<'booting' | 'landing' | 'simulation' | 'command-center'>('booting');
   const [showManual, setShowManual] = useState(false);
   const [showDiagnostics, setShowDiagnostics] = useState(true);
   const [operatorRole, setOperatorRole] = useState<string>('Administrator');
