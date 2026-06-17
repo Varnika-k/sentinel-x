@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useEnterpriseBackend } from '../../hooks/useEnterpriseBackend';
+
 import { 
   Shield, Users, Server, Database, Cloud, AlertTriangle, Search, 
   Brain, FileCheck, CheckCircle2, TrendingUp, Sparkles, Send, 
@@ -46,14 +45,6 @@ export function EnterpriseCommandCenter({
   operatorRole = 'Executive Administrator',
   activeTenant = 'CORE_GLOBAL_HQ'
 }: EnterpriseCommandCenterProps) {
-const {
-fabricStats,
-executiveSummary,
-cognition,
-users
-} = useEnterpriseBackend();
-
-
   // Navigation tabs
   const [activeTab, setActiveTab ] = useState<'control' | 'fabric' | 'datafabric' | 'org' | 'workforce' | 'apps' | 'infra' | 'governance' | 'cognition' | 'enterprise-os' | 'enterprise-simulation'>('enterprise-os');
   
@@ -366,7 +357,8 @@ users
                       </div>
                       <span className="text-[6.5px] text-text-tertiary leading-none mt-2 font-mono block truncate">{score.desc}</span>
                     </div>
-                  ))}               </div>
+                  ))}
+                </div>
 
                 {/* EXECUTIVE METADATA TOTALS SECTION WITH SPARK CHARTS */}
                 <div className="p-6 bg-panel/20 border border-border rounded-sm">
@@ -379,13 +371,13 @@ users
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {[ 
-                      { icon: Users, label: 'GLOBAL EMPLOYEES', val: fabricStats ? fabricStats.activeWorkforceEmployeesCount.toLocaleString() : 'Loading...', trend: '+1.4% Monthly', color: 'text-accent-cyan' },
-                      { icon: Building2, label: 'TOTAL DEPARTMENTS', val: fabricStats ? fabricStats.activeDepartmentsCount.toLocaleString() : 'Loading...', trend: 'Stable Hierarchy', color: 'text-accent-blue' },
-                      { icon: Layers, label: 'CORPORATE APPLICATIONS', val: fabricStats ? fabricStats.fusedApplicationsCount.toLocaleString() : 'Loading...', trend: 'Compliance Audited', color: 'text-teal-400' },
+                    {[
+                      { icon: Users, label: 'GLOBAL EMPLOYEES', val: '102,451', trend: '+1.4% Monthly', color: 'text-accent-cyan' },
+                      { icon: Building2, label: 'TOTAL DEPARTMENTS', val: '10 Units', trend: 'Stable Hierarchy', color: 'text-accent-blue' },
+                      { icon: Layers, label: 'CORPORATE APPLICATIONS', val: '7 Primary Tools', trend: 'Compliance Audited', color: 'text-teal-400' },
                       { icon: Database, label: 'DATA REPOSITORIES', val: '6 Repositories', trend: 'Classification Stable', color: 'text-indigo-400' },
                       { icon: Server, label: 'ON-PREM BARE METALS', val: '8 Infrastructure Node Servers', trend: 'Capacity Index: Optimum', color: 'text-sky-400' },
-                      { icon: Cloud, label: 'CLOUD RESOURCES DEPLOYED', val: fabricStats ? fabricStats.activeCloudAssetsCount.toLocaleString() : 'Loading...', trend: '99.98% Available', color: 'text-cyan-400' },
+                      { icon: Cloud, label: 'CLOUD RESOURCES DEPLOYED', val: '5,920 Instances', trend: '99.98% Available', color: 'text-cyan-400' },
                       { icon: Cpu, label: 'INTELLIGENT ENDPOINT DEVICES', val: '204,910 Total', trend: '+142 New Devices', color: 'text-orange-400' },
                       { icon: ShieldAlert, label: 'CRITICAL VALUE ASSETS', val: '4 Restricted Databases', trend: 'Maximum Protection Ring', color: 'text-state-patched' }
                     ].map((stat) => (
