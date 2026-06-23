@@ -132,15 +132,45 @@ users
     setCopilotInput('');
     setIsCopilotThinking(true);
 
-    setTimeout(() => {
-      const analysis = processExecutiveCopilotQuery(q);
-      setCopilotHistory(prev => [...prev, { 
-        sender: 'system', 
-        text: analysis.summary,
-        attachment: analysis
-      }]);
-      setIsCopilotThinking(false);
-    }, 1200);
+    (async () => {
+  try {
+    const res = await fetch('/api/v2/cognition/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: q
+      })
+    });
+
+    const data = await res.json();
+
+    setCopilotHistory(prev => [
+      ...prev,
+      {
+        sender: 'system',
+        text:
+          data.answerMarkdown ||
+          data.answer ||
+          data.response ||
+          JSON.stringify(data, null, 2)
+      }
+    ]);
+  } catch (err) {
+    console.error(err);
+
+    setCopilotHistory(prev => [
+      ...prev,
+      {
+        sender: 'system',
+        text: 'Backend cognition engine unavailable.'
+      }
+    ]);
+  }
+
+  setIsCopilotThinking(false);
+})();
   };
 
   // Recharts theme colors for standard charts
